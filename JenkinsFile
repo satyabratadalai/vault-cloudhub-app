@@ -51,8 +51,8 @@ pipeline {
                     def pomContent = readFile 'pom.xml'
                     
                     // Modify the content using a safer Groovy string manipulation
-                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', '<database.username>"${databaseuname}"</database.username>')
-                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', '<database.password>"${databasepassword}"</database.password>')
+                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', "<database.username>${databaseuname}</database.username>")
+                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', "<database.password>${databasepassword}</database.password>")
 
                     // Write the modified content back to pom.xml
                     writeFile file: 'pom.xml', text: pomContent
