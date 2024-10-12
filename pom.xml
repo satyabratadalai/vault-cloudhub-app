@@ -30,18 +30,18 @@
 					<cloudhub2Deployment>
 						<uri>https://anypoint.mulesoft.com</uri>
 						<provider>MC</provider>
-						<environment>${environment}</environment>
-						<target>${targetName}</target>
+						<environment>Sandbox</environment>
+						<target>Sandbox</target>
 						<muleVersion>${muleVersion}</muleVersion>
-						<username>${user}</username>
-						<password>${pass}</password>
-						<applicationName>${appName}</applicationName>
+						<username>SATYA_INNOVATION</username>
+						<password>MYnoki@523@</password>
+						<applicationName>vault-cloudhub</applicationName>
 						<replicas>1</replicas>
 						<vCores>1</vCores>
 						<deploymentSettings>
 							<http>
 								<inbound>
-									<publicUrl>${publicURL}</publicUrl>
+									<publicUrl>https://myapp.anypoint.com</publicUrl>
 									<forwardSslSession>true</forwardSslSession>
 									<lastMileSecurity>true</lastMileSecurity>
 								</inbound>
