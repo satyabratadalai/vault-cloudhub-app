@@ -1,7 +1,7 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven' // Ensure this is the name given to the Maven configuration in Jenkins
+    environment {
+        MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
     }
     stages {
         stage('Build') {
