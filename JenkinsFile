@@ -15,6 +15,7 @@ pipeline {
         stage('deploy') {
 
             steps {
+                    echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean deploy -DmuleDeploy'
                 }
