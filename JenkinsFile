@@ -46,14 +46,8 @@ pipeline {
                         withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
                             def databaseuname = env.username
                             def databasepassword = env.password
-                        }
-                    } else {
-                        echo "Vault path not set due to invalid environment"
-                    }
 
-
-
-                    // Load the pom.xml file content
+                            // Load the pom.xml file content
                     def pomContent = readFile 'pom.xml'
                     
                     // Modify the content using a safer Groovy string manipulation
@@ -62,6 +56,14 @@ pipeline {
 
                     // Write the modified content back to pom.xml
                     writeFile file: 'pom.xml', text: pomContent
+                        }
+                    } else {
+                        echo "Vault path not set due to invalid environment"
+                    }
+
+
+
+                    
                 }
             }
         }
