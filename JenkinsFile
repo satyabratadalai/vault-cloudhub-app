@@ -1,0 +1,13 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven' // Ensure this is the name given to the Maven configuration in Jenkins
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
+}
