@@ -12,12 +12,24 @@ pipeline {
                 }
         }
 }
-        stage('deploy') {
+        stage('upload to exchange') {
 
             steps {
                     echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean deploy'
+                }
+        
+    }
+}
+
+ stage('Deploy To Cloudhub 2.0') {
+
+            steps {
+                    echo "LETS DEPLOY"
+                withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
+                    sh 'mvn clean deploy -DmuleDeploy
+'
                 }
         
     }
