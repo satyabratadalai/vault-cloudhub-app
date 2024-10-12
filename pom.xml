@@ -41,7 +41,6 @@
 						<deploymentSettings>
 							<http>
 								<inbound>
-									<publicUrl>https://myapp.anypoint.com</publicUrl>
 									<forwardSslSession>true</forwardSslSession>
 									<lastMileSecurity>true</lastMileSecurity>
 								</inbound>
