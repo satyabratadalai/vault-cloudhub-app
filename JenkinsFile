@@ -5,33 +5,64 @@ pipeline {
         MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
     }
     stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/satyabratadalai/vault-cloudhub-app.git'  
+            }
+        }
+        
+        stage('Modifying POM File : Pre Deployment') {
+            steps {
+                script {
+				
+                        // Load the pom.xml file
+                        def pom = new File('pom.xml')
+                        def xml = new XmlSlurper().parse(pom)
+						
+						//Test
+						
+						def DB_USER = "HELLO"
+						def DB_PASS = "HELLO PASS"
+						
+                        // Modify XML nodes directly
+                        xml.properties.'database.username'.replaceBody(DB_USER)
+                        xml.properties.'database.password'.replaceBody(DB_PASS)
+
+                        // Save the modified XML back to pom.xml
+                        def writer = new FileWriter(pom)
+                        def printer = new XmlNodePrinter(new PrintWriter(writer))
+                        printer.preserveWhitespace = true
+                        printer.print(xml)
+                        writer.close()
+                    
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean package'
                 }
+            }
         }
-}
-        stage('upload to exchange') {
 
+        stage('Upload to Exchange') {
             steps {
-                    echo "LETS DEPLOY"
+                echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean deploy'
                 }
-        
-    }
-}
+            }
+        }
 
- stage('Deploy To Cloudhub 2.0') {
-
+        stage('Deploy To Cloudhub 2.0') {
             steps {
-                    echo "LETS DEPLOY"
+                echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean deploy -DmuleDeploy'
                 }
-        
+            }
+        }
     }
-}
-}
 }
