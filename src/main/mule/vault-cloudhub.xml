@@ -16,10 +16,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
+%dw 2.0
+output application/json
+---
 {
 	"Status" : "Working",
 	"UserName" : p('secure::database.username'),
-	"Password" : p('secure::database.password')
+	"Password" : p('secure::database.password'),
+	"User" : p('database.username'),
+	"Pass" : p('database.password')
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
