@@ -1,7 +1,8 @@
 pipeline {
     agent any
     environment {
-        MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED"
+        // Include previous settings and add the new --add-opens option
+        MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED"
     }
     stages {
         stage('Build') {
