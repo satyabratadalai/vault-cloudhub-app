@@ -14,12 +14,51 @@ pipeline {
         stage('Modifying POM File : Pre Deployment') {
             steps {
                 script {
+
+                    def vaultPath = '' 
+                    echo "Environment Selected : ${ENV}"
+                    if ("${ENV}" == 'DEV') {
+                        echo "FOR DEV"
+                        vaultPath = "secret/mulesoft-dev"
+                    } else if ("${ENV}" == 'UAT') {
+                        echo "FOR UAT"
+                        vaultPath = "secret/mulesoft-uat"
+                    } else if ("${ENV}" == 'PROD') {
+                        echo "FOR PROD"
+                        vaultPath = "secret/mulesoft-prod"
+                    } else {
+                        echo "INVALID ENV"
+                    }
+
+
+
+                    if (vaultPath){
+                        echo "Using Vault Path: ${vaultPath}"
+                        // Initialize Vault access
+                        def secrets = [
+                            [$class: 'VaultSecret', path: vaultPath, secretValues: [
+                                [$class: 'VaultSecretValue', envVar: 'username', vaultKey: 'database.username'],
+                                [$class: 'VaultSecretValue', envVar: 'password', vaultKey: 'database.password']
+                            ]]
+                        ]
+                        echo "WORKING"
+                        // Fetch secrets from Vault
+                        withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
+                            def databaseuname = env.username
+                            def databasepassword = env.password
+                        }
+                    } else {
+                        echo "Vault path not set due to invalid environment"
+                    }
+
+
+
                     // Load the pom.xml file content
                     def pomContent = readFile 'pom.xml'
                     
                     // Modify the content using a safer Groovy string manipulation
-                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', '<database.username>HELLO</database.username>')
-                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', '<database.password>HELLO PASS</database.password>')
+                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', '<database.username>${databaseuname}</database.username>')
+                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', '<database.password>${databasepassword}</database.password>')
 
                     // Write the modified content back to pom.xml
                     writeFile file: 'pom.xml', text: pomContent
