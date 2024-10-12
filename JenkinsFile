@@ -14,27 +14,15 @@ pipeline {
         stage('Modifying POM File : Pre Deployment') {
             steps {
                 script {
-				
-                        // Load the pom.xml file
-                        def pom = new File('pom.xml')
-                        def xml = new XmlSlurper().parse(pom)
-						
-						//Test
-						
-						def DB_USER = "HELLO"
-						def DB_PASS = "HELLO PASS"
-						
-                        // Modify XML nodes directly
-                        xml.properties.'database.username'.replaceBody(DB_USER)
-                        xml.properties.'database.password'.replaceBody(DB_PASS)
-
-                        // Save the modified XML back to pom.xml
-                        def writer = new FileWriter(pom)
-                        def printer = new XmlNodePrinter(new PrintWriter(writer))
-                        printer.preserveWhitespace = true
-                        printer.print(xml)
-                        writer.close()
+                    // Load the pom.xml file content
+                    def pomContent = readFile 'pom.xml'
                     
+                    // Modify the content using a safer Groovy string manipulation
+                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', '<database.username>HELLO</database.username>')
+                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', '<database.password>HELLO PASS</database.password>')
+
+                    // Write the modified content back to pom.xml
+                    writeFile file: 'pom.xml', text: pomContent
                 }
             }
         }
