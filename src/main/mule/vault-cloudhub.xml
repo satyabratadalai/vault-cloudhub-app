@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aa9ab282-a0c9-4047-8d5d-11ec4e480a16" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="vault-cloudhubFlow" doc:id="8a025889-86dd-4974-9b06-98073182ef10" >
+		<http:listener doc:name="Listener" doc:id="43e93765-dd34-4abd-a0eb-4180b0296a95" config-ref="HTTP_Listener_config" path="/poctest"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c812dc2f-2e9a-46b9-8f4f-42505611f3b9" message="Stared----"/>
+		<ee:transform doc:name="Transform Message" doc:id="751fc1ea-dd8e-4a37-9567-081b968afdd9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status" : "Working"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
