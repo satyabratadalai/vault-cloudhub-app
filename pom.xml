@@ -32,7 +32,7 @@
 						<provider>MC</provider>
 						<environment>Sandbox</environment>
 						<target>Cloudhub-US-East-2</target>
-						<muleVersion>4.8.0:8e</muleVersion>
+						<muleVersion>4.8.0</muleVersion>
 						<username>SATYA_INNOVATION</username>
 						<password>MYnoki@523@</password>
 						<applicationName>vault-cloudhub</applicationName>
