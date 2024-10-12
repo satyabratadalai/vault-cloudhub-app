@@ -41,8 +41,8 @@
 						<deploymentSettings>
 							<http>
 								<inbound>
-									<forwardSslSession>true</forwardSslSession>
-									<lastMileSecurity>true</lastMileSecurity>
+									<forwardSslSession>false</forwardSslSession>
+									<lastMileSecurity>false</lastMileSecurity>
 								</inbound>
 							</http>
 						</deploymentSettings>
