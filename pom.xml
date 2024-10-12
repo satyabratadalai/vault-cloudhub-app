@@ -37,6 +37,10 @@
 						<applicationName>vault-cloudhub</applicationName>
 						<replicas>1</replicas>
 						<vCores>0.1</vCores>
+						<secureProperties>
+							<database.username>TEST</database.username>
+							<database.password>TESTPASSWORD</database.password>
+						</secureProperties>
 						<deploymentSettings>
 							<http>
 								<inbound>
