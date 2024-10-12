@@ -11,12 +11,13 @@ pipeline {
                     sh 'mvn clean package'
                 }
         }
+}
         stage('deploy') {
 
             steps {
                 withMaven(maven: 'maven-3.6.3', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh 'mvn clean deploy -DmuleDeploy'
                 }
-        }
+        
     }
 }
