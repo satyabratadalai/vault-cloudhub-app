@@ -33,8 +33,7 @@
 						<environment>Sandbox</environment>
 						<target>Cloudhub-US-East-2</target>
 						<muleVersion>4.8.0</muleVersion>
-						<username>SATYA_INNOVATION</username>
-						<password>MYnoki@523@</password>
+						<server>mc-deployer</server>
 						<applicationName>vault-cloudhub</applicationName>
 						<replicas>1</replicas>
 						<vCores>1</vCores>
