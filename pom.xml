@@ -14,29 +14,6 @@
 		<app.runtime>4.5.1</app.runtime>
 		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
 	</properties>
-	<profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <database.username>${dev.database.username}</database.username>
-                <database.password>${dev.database.password}</database.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>uat</id>
-            <properties>
-                <database.username>${uat.database.username}</database.username>
-                <database.password>${uat.database.password}</database.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>prod</id>
-            <properties>
-                <database.username>${prod.database.username}</database.username>
-                <database.password>${prod.database.password}</database.password>
-            </properties>
-        </profile>
-    </profiles>
 	<build>
 		<plugins>
 			<plugin>
@@ -61,9 +38,9 @@
 						<replicas>1</replicas>
 						<vCores>0.1</vCores>
 						<secureProperties>
-    <database.username>${env.DATABASE_USERNAME}</database.username>
-    <database.password>${env.DATABASE_PASSWORD}</database.password>
-</secureProperties>
+							<database.username>TEST</database.username>
+							<database.password>TESTPASSWORD</database.password>
+						</secureProperties>
 						<deploymentSettings>
 							<http>
 								<inbound>
