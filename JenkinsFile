@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        // Include all necessary --add-opens options
+        // Including the necessary --add-opens options
         MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
     }
     stages {
@@ -10,60 +10,35 @@ pipeline {
                 git url: 'https://github.com/satyabratadalai/vault-cloudhub-app.git', branch: 'main'
             }
         }
-        
-        stage('Modifying POM File : Pre Deployment') {
+
+        stage('Fetch Secrets') {
             steps {
                 script {
-
-                    def vaultPath = '' 
+                    def vaultPath = ''
                     echo "Environment Selected : ${ENV}"
                     if ("${ENV}" == 'DEV') {
-                        echo "FOR DEV"
                         vaultPath = "secret/mulesoft-dev"
                     } else if ("${ENV}" == 'UAT') {
-                        echo "FOR UAT"
                         vaultPath = "secret/mulesoft-uat"
                     } else if ("${ENV}" == 'PROD') {
-                        echo "FOR PROD"
                         vaultPath = "secret/mulesoft-prod"
                     } else {
                         echo "INVALID ENV"
+                        return // Exit the stage if the environment is invalid
                     }
 
-
-
-                    if (vaultPath){
-                        echo "Using Vault Path: ${vaultPath}"
-                        // Initialize Vault access
-                        def secrets = [
-                            [$class: 'VaultSecret', path: vaultPath, secretValues: [
-                                [$class: 'VaultSecretValue', envVar: 'username', vaultKey: 'database.username'],
-                                [$class: 'VaultSecretValue', envVar: 'password', vaultKey: 'database.password']
-                            ]]
-                        ]
-                        echo "WORKING"
-                        // Fetch secrets from Vault
-                        withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
-                            def databaseuname = env.username
-                            def databasepassword = env.password
-
-                     
-                    def pomContent = readFile 'pom.xml'
-                    
-                    
-                    pomContent = pomContent.replaceFirst('<database.username>.*?</database.username>', "<database.username>${databaseuname}</database.username>")
-                    pomContent = pomContent.replaceFirst('<database.password>.*?</database.password>', "<database.password>${databasepassword}</database.password>")
-
-                    // Write the modified content back to pom.xml
-                    writeFile file: 'pom.xml', text: pomContent
-                        }
-                    } else {
-                        echo "Vault path not set due to invalid environment"
+                    // Initialize and Fetch secrets from Vault
+                    def secrets = [
+                        [$class: 'VaultSecret', path: vaultPath, secretValues: [
+                            [$class: 'VaultSecretValue', envVar: 'DATABASE_USERNAME', vaultKey: 'database.username'],
+                            [$class: 'VaultSecretValue', envVar: 'DATABASE_PASSWORD', vaultKey: 'database.password']
+                        ]]
+                    ]
+                    // Store secrets in environment variables
+                    withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
+                        env.DATABASE_USERNAME = env.DATABASE_USERNAME
+                        env.DATABASE_PASSWORD = env.DATABASE_PASSWORD
                     }
-
-
-
-                    
                 }
             }
         }
@@ -71,25 +46,23 @@ pipeline {
         stage('Build') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh 'mvn clean package'
+                    sh "mvn clean package -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
                 }
             }
         }
 
         stage('Upload to Exchange') {
             steps {
-                echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh 'mvn clean deploy'
+                    sh "mvn clean deploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
                 }
             }
         }
 
         stage('Deploy To Cloudhub 2.0') {
             steps {
-                echo "LETS DEPLOY"
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh 'mvn clean deploy -DmuleDeploy'
+                    sh "mvn clean deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
                 }
             }
         }
