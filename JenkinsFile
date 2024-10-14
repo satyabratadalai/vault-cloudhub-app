@@ -9,27 +9,24 @@ pipeline {
                 git url: 'https://github.com/satyabratadalai/vault-cloudhub-app.git', branch: 'main'
             }
         }
+        
         stage('Fetch Secrets') {
             steps {
                 script {
-                    def vaultPath = ''
+                    def vaultPath = '' 
                     echo "Environment Selected : ${ENV}"
-                    switch(ENV) {
-                        case "dev":
-                            vaultPath = "secret/mulesoft-dev"
-                            break
-                        case "uat":
-                            vaultPath = "secret/mulesoft-uat"
-                            break
-                        case "prod":
-                            vaultPath = "secret/mulesoft-prod"
-                            break
-                        default:
-                            echo "INVALID ENV"
-                            return
+                    if ("${ENV}" == 'DEV') {
+                        vaultPath = "secret/mulesoft-dev"
+                    } else if ("${ENV}" == 'UAT') {
+                        vaultPath = "secret/mulesoft-uat"
+                    } else if ("${ENV}" == 'PROD') {
+                        vaultPath = "secret/mulesoft-prod"
+                    } else {
+                        echo "INVALID ENV"
+                        return // Exit the stage if the environment is invalid
                     }
 
-                    // Fetch and set secrets from Vault
+                    // Fetch secrets from Vault
                     def secrets = [
                         [$class: 'VaultSecret', path: vaultPath, secretValues: [
                             [$class: 'VaultSecretValue', envVar: 'DATABASE_USERNAME', vaultKey: 'database.username'],
@@ -39,16 +36,15 @@ pipeline {
                     withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
                         env.DATABASE_USERNAME = env.DATABASE_USERNAME
                         env.DATABASE_PASSWORD = env.DATABASE_PASSWORD
-                        env.DATABASE_USERNAME_DUMMY = 'DUMMY'
-                        env.DATABASE_PASSWORD_DUMMY = 'DUMMY'
                     }
                 }
             }
         }
+
         stage('Build and Deploy') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh "mvn clean package deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
+                    sh "mvn clean deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
                 }
             }
         }
