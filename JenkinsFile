@@ -51,7 +51,7 @@ pipeline {
                     sh "mvn clean package deploy -Ddatabase.username=${env.DATABASE_USERNAME_DUMMY} -Ddatabase.password=${env.DATABASE_PASSWORD_DUMMY}"
                 }
             }
-
+        }
          stage('Deploy To Cloudhub 2.0') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
