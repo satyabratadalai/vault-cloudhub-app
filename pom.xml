@@ -14,6 +14,29 @@
 		<app.runtime>4.5.1</app.runtime>
 		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
 	</properties>
+	<profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <database.username>${dev.db.username}</database.username>
+                <database.password>${dev.db.password}</database.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>uat</id>
+            <properties>
+                <database.username>${uat.db.username}</database.username>
+                <database.password>${uat.db.password}</database.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <database.username>${prod.db.username}</database.username>
+                <database.password>${prod.db.password}</database.password>
+            </properties>
+        </profile>
+    </profiles>
 	<build>
 		<plugins>
 			<plugin>
