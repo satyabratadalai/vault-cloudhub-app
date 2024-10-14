@@ -16,11 +16,11 @@ pipeline {
                 script {
                     def vaultPath = ''
                     echo "Environment Selected : ${ENV}"
-                    if ("${ENV}" == 'DEV') {
+                    if ("${ENV}" == 'dev') {
                         vaultPath = "secret/mulesoft-dev"
-                    } else if ("${ENV}" == 'UAT') {
+                    } else if ("${ENV}" == 'uat') {
                         vaultPath = "secret/mulesoft-uat"
-                    } else if ("${ENV}" == 'PROD') {
+                    } else if ("${ENV}" == 'prod') {
                         vaultPath = "secret/mulesoft-prod"
                     } else {
                         echo "INVALID ENV"
