@@ -45,14 +45,7 @@ pipeline {
                 }
             }
         }
-        stage('Move To Exchange') {
-            steps {
-                withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh "mvn clean package deploy -Ddatabase.username=${env.DATABASE_USERNAME_DUMMY} -Ddatabase.password=${env.DATABASE_PASSWORD_DUMMY}"
-                }
-            }
-        }
-         stage('Deploy To Cloudhub 2.0') {
+        stage('Build and Deploy') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
                     sh "mvn clean package deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
