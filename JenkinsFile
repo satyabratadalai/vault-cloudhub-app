@@ -26,6 +26,9 @@ pipeline {
                         return // Exit the stage if the environment is invalid
                     }
 
+                    //Set Dummy Password
+                        DATABASE_USERNAME_DUMMY = 'DUMMY'
+                        DATABASE_PASSWORD_DUMMY = 'DUMMY'
                     // Fetch secrets from Vault
                     def secrets = [
                         [$class: 'VaultSecret', path: vaultPath, secretValues: [
@@ -36,6 +39,7 @@ pipeline {
                     withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
                         env.DATABASE_USERNAME = env.DATABASE_USERNAME
                         env.DATABASE_PASSWORD = env.DATABASE_PASSWORD
+                        
                     }
                 }
             }
@@ -44,7 +48,7 @@ pipeline {
         stage('Exchange') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh "mvn clean deploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
+                    sh "mvn clean deploy -Ddatabase.username=${DATABASE_USERNAME_DUMMY} -Ddatabase.password=${env.DATABASE_PASSWORD_DUMMY}"
                 }
             }
         }
