@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
 	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>c4279fc5-5496-4e4c-a65f-a293a75f4ebb</groupId>
 	<artifactId>vault-cloudhub</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 	<name>vault-cloudhub</name>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<app.runtime>4.5.1</app.runtime>
-		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.8.7</mule.maven.plugin.version>
 	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -24,7 +27,7 @@
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
 				<artifactId>mule-maven-plugin</artifactId>
-				<version>3.8.7</version>
+				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
 					<cloudhub2Deployment>
@@ -38,8 +41,8 @@
 						<replicas>1</replicas>
 						<vCores>0.1</vCores>
 						<secureProperties>
-							<database.username>TEST</database.username>
-							<database.password>TESTPASSWORD</database.password>
+							<database.username>${database.username}</database.username>
+							<database.password>${database.password}</database.password>
 						</secureProperties>
 						<deploymentSettings>
 							<http>
@@ -54,14 +57,16 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<distributionManagement>
-    <repository>
-      <id>anypoint-exchange-v3</id>
-      <name>Corporate Repository</name>
-      <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/c4279fc5-5496-4e4c-a65f-a293a75f4ebb/maven</url>
-      <layout>default</layout>
-    </repository>
-  </distributionManagement>
+		<repository>
+			<id>anypoint-exchange-v3</id>
+			<name>Corporate Repository</name>
+			<url>https://maven.anypoint.mulesoft.com/api/v3/organizations/c4279fc5-5496-4e4c-a65f-a293a75f4ebb/maven</url>
+			<layout>default</layout>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
@@ -76,6 +81,7 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 	</dependencies>
+
 	<repositories>
 		<repository>
 			<id>anypoint-exchange-v3</id>
@@ -90,6 +96,7 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>mulesoft-releases</id>
