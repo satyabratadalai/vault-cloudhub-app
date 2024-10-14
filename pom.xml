@@ -18,22 +18,22 @@
         <profile>
             <id>dev</id>
             <properties>
-                <database.username>${dev.db.username}</database.username>
-                <database.password>${dev.db.password}</database.password>
+                <database.username>${dev.database.username}</database.username>
+                <database.password>${dev.database.password}</database.password>
             </properties>
         </profile>
         <profile>
             <id>uat</id>
             <properties>
-                <database.username>${uat.db.username}</database.username>
-                <database.password>${uat.db.password}</database.password>
+                <database.username>${uat.database.username}</database.username>
+                <database.password>${uat.database.password}</database.password>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <database.username>${prod.db.username}</database.username>
-                <database.password>${prod.db.password}</database.password>
+                <database.username>${prod.database.username}</database.username>
+                <database.password>${prod.database.password}</database.password>
             </properties>
         </profile>
     </profiles>
