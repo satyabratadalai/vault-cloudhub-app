@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    environment {
+        MAVEN_OPTS = "--add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/satyabratadalai/vault-cloudhub-app.git', branch: 'main'
+            }
+        }
+        
+        stage('Fetch Secrets') {
+            steps {
+                script {
+                    def vaultPath = '' 
+                    echo "Environment Selected : ${ENV}"
+                    if ("${ENV}" == 'DEV') {
+                        vaultPath = "secret/mulesoft-dev"
+                    } else if ("${ENV}" == 'UAT') {
+                        vaultPath = "secret/mulesoft-uat"
+                    } else if ("${ENV}" == 'PROD') {
+                        vaultPath = "secret/mulesoft-prod"
+                    } else {
+                        echo "INVALID ENV"
+                        return // Exit the stage if the environment is invalid
+                    }
+
+                    //Set Dummy Password
+                        DATABASE_USERNAME_DUMMY = 'DUMMY'
+                        DATABASE_PASSWORD_DUMMY = 'DUMMY'
+                    // Fetch secrets from Vault
+                    def secrets = [
+                        [$class: 'VaultSecret', path: vaultPath, secretValues: [
+                            [$class: 'VaultSecretValue', envVar: 'DATABASE_USERNAME', vaultKey: 'database.username'],
+                            [$class: 'VaultSecretValue', envVar: 'DATABASE_PASSWORD', vaultKey: 'database.password']
+                        ]]
+                    ]
+                    withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
+                        env.DATABASE_USERNAME = env.DATABASE_USERNAME
+                        env.DATABASE_PASSWORD = env.DATABASE_PASSWORD
+                        
+                    }
+                }
+            }
+        }
+
+        stage('Exchange') {
+            steps {
+                withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
+                    sh "mvn clean deploy -Ddatabase.username=${DATABASE_USERNAME_DUMMY} -Ddatabase.password=${env.DATABASE_PASSWORD_DUMMY}"
+                }
+            }
+        }
+
+        stage('Cloudhub 2.0') {
+            steps {
+                withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
+                    sh "mvn clean deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
+                }
+            }
+        }
+    }
+}
