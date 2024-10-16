@@ -13,22 +13,19 @@ pipeline {
         stage('Fetch Secrets') {
             steps {
                 script {
-                    def vaultPath = '' 
-                    echo "Environment Selected : ${ENV}"
-                    if ("${ENV}" == 'DEV') {
+                    def vaultPath = ''
+                    echo "Environment Selected: ${ENV}"
+                    if (ENV == 'DEV') {
                         vaultPath = "secret/mulesoft-dev"
-                    } else if ("${ENV}" == 'UAT') {
+                    } else if (ENV == 'UAT') {
                         vaultPath = "secret/mulesoft-uat"
-                    } else if ("${ENV}" == 'PROD') {
+                    } else if (ENV == 'PROD') {
                         vaultPath = "secret/mulesoft-prod"
                     } else {
                         echo "INVALID ENV"
                         return // Exit the stage if the environment is invalid
                     }
 
-                    //Set Dummy Password
-                        DATABASE_USERNAME_DUMMY = 'DUMMY'
-                        DATABASE_PASSWORD_DUMMY = 'DUMMY'
                     // Fetch secrets from Vault
                     def secrets = [
                         [$class: 'VaultSecret', path: vaultPath, secretValues: [
@@ -37,9 +34,9 @@ pipeline {
                         ]]
                     ]
                     withVault([vaultSecrets: secrets, vaultConfigurationId: 'vault-token']) {
-                        env.DATABASE_USERNAME = env.DATABASE_USERNAME
-                        env.DATABASE_PASSWORD = env.DATABASE_PASSWORD
-                        
+                        // Store the credentials in environment variables
+                        env.DATABASE_USERNAME = env.DATABASE_USERNAME ?: 'DUMMY' // Fallback to 'DUMMY' if null
+                        env.DATABASE_PASSWORD = env.DATABASE_PASSWORD ?: 'DUMMY' // Fallback to 'DUMMY' if null
                     }
                 }
             }
@@ -48,8 +45,10 @@ pipeline {
         stage('Exchange') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    maskPasswords([pair('DB_USER', '${env.DATABASE_USERNAME_DUMMY}'), pair('DB_PASS', '${env.DATABASE_PASSWORD_DUMMY}')])
-                    sh "mvn clean deploy -Ddatabase.username=$DB_USER -Ddatabase.password=$DB_PASS"
+                    // Pass credentials safely without exposing them in the console
+                    withEnv(["DATABASE_USERNAME=${env.DATABASE_USERNAME}", "DATABASE_PASSWORD=${env.DATABASE_PASSWORD}"]) {
+                        sh 'mvn clean deploy -Ddatabase.username=$DATABASE_USERNAME -Ddatabase.password=$DATABASE_PASSWORD'
+                    }
                 }
             }
         }
@@ -57,7 +56,10 @@ pipeline {
         stage('Cloudhub 2.0') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    sh "mvn clean deploy -DmuleDeploy -Ddatabase.username=${env.DATABASE_USERNAME} -Ddatabase.password=${env.DATABASE_PASSWORD}"
+                    // Masking the environment variables within the Maven command
+                    withEnv(["DATABASE_USERNAME=${env.DATABASE_USERNAME}", "DATABASE_PASSWORD=${env.DATABASE_PASSWORD}"]) {
+                        sh 'mvn clean deploy -DmuleDeploy -Ddatabase.username=$DATABASE_USERNAME -Ddatabase.password=$DATABASE_PASSWORD'
+                    }
                 }
             }
         }
