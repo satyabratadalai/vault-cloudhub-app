@@ -48,7 +48,7 @@ pipeline {
         stage('Exchange') {
             steps {
                 withMaven(maven: 'Maven', mavenSettingsConfig: '3802749b-765f-4b02-86ab-bcf94c417beb') {
-                    maskPasswords([pair('DB_USER', ${DATABASE_USERNAME_DUMMY}), pair('DB_PASS', ${env.DATABASE_PASSWORD_DUMMY})])
+                    maskPasswords([pair('DB_USER', ${env.DATABASE_USERNAME_DUMMY}), pair('DB_PASS', ${env.DATABASE_PASSWORD_DUMMY})])
                     sh "mvn clean deploy -Ddatabase.username=$DB_USER -Ddatabase.password=$DB_PASS"
                 }
             }
